@@ -1,0 +1,13 @@
+# Settings (syntax is shell script)
+
+# How to use:
+#   - Rename to 'settings' (w/o the '.example' extension)
+#   - Move to root of project folder
+
+CRON_COMMAND="./run.sh"
+
+CRON_SCHEDULE="0 * * * *"
+
+CRON_DESCRIPTION="Run script every hour."
+
+CRON_MARKER="3ddcad7041c1282e3acf0f04e71231aa"
