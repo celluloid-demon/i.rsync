@@ -11,21 +11,41 @@ set -e
 BACKUP_DIR="$HOME/Backups"
 
 # Declare vars
+lockfile="/tmp/rsync-home-ssd.lock"
 target="/home-ssd/jonathan/"
 destination="${BACKUP_DIR}/home-ssd/jonathan/"
 
-# -a or --archive: This option is equivalent to -rlptgoD and ensures that rsync
-# preserves permissions, ownership, timestamps, and recursively copies
-# directories.
+# Main logic
+main() {
 
-# -v or --verbose: Increases the verbosity of rsync, so it will show you the
-# files as they are copied.
+    # -a or --archive: This option is equivalent to -rlptgoD and ensures that
+    # rsync preserves permissions, ownership, timestamps, and recursively copies
+    # directories.
 
-# By default, rsync includes hidden files, so you don't need any additional
-# options for that.
+    # -v or --verbose: Increases the verbosity of rsync, so it will show you the
+    # files as they are copied.
 
-# todo
-# PID lock function (probably from lib)
+    # By default, rsync includes hidden files, so you don't need any additional
+    # options for that.
 
-mkdir -p "$destination"
-rsync -av "$target" "$destination"
+    # Try to acquire the lock
+    if mkdir "$lockfile"; then
+
+        # Lock acquired, perform rsync backup
+        mkdir -p "$destination"
+        rsync -av "$target" "$destination"
+        
+        # Release the lock
+        rmdir "$lockfile"
+
+    else
+
+        # Unable to acquire the lock, a previous instance is still running
+        echo "Previous rsync job is still running, canceling."
+        exit 1
+
+    fi
+
+}
+
+main
