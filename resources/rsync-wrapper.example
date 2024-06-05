@@ -1,0 +1,72 @@
+#!/bin/bash
+
+LOCKFILE="/tmp/rsync-wrapper.lock"
+
+#############################
+#                           #
+#          EXAMPLE          #
+#                           #
+#############################
+
+# dir="/home/jonathan/Desktop/@projects.rclone.bak"
+
+# rclone sync google-drive-art: "${dir}/"
+
+##############################################
+#                                            #
+#          BEGIN USER CONFIGURATION          #
+#                                            #
+##############################################
+
+DESKTOP_JON="/home/jonathan/Desktop"
+
+# @projects.rclone.bak
+
+dir="${DESKTOP_JON}/@projects.rclone.bak"
+
+rclone sync google-drive-art: "${dir}/"
+
+# @windows-files
+
+source="${DESKTOP_JON}/Windows Desktop"
+destination="${DESKTOP_JON}/@windows-files"
+
+# Try to acquire the lock
+if mkdir "$lockfile"; then
+
+    # Lock acquired, perform rsync backup
+    mkdir -p "$destination"
+
+    rsync \
+            --append \
+            --archive \
+            --exclude "*.lnk" \
+            --exclude "desktop.ini" \
+            --exclude "Fedora_vmw" \
+            --exclude "Google*" \
+            --info=progress2 \
+            --partial \
+            "${source}/" \
+            "${destination}/"
+
+    # Release the lock
+    rmdir "$lockfile"
+
+else
+
+    # Unable to acquire the lock, a previous instance is still running
+    echo "Previous rsync job is still running, canceling."
+    exit 1
+
+fi
+
+
+
+
+
+
+
+
+
+
+

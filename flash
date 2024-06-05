@@ -1,0 +1,100 @@
+#!/bin/bash
+
+# Exit on error
+set -e
+
+# Declare constants
+
+SCRIPT_FOLDER="$(dirname "$0")"
+
+RESOURCES="${SCRIPT_FOLDER}/resources"
+WORKING_FOLDER="${SCRIPT_FOLDER}/working_folder"
+
+SYSTEM_BIN="/usr/local/bin"
+SYSTEM_UNITS="/etc/systemd/system"
+
+TIMER="rsync.timer"
+SERVICE="rsync.service"
+
+WRAPPER="rsync-wrapper"
+
+OS="$(uname --all)"
+
+# Initialize flags with default values
+FLAG_os_is_steamos=0
+
+if echo "$OS" | grep -q steam; then
+
+    FLAG_os_is_steamos=1
+
+fi
+
+# Initialize working copies of unit files if missing (you'll configure these working copies then flash them to the system)
+
+if [ ! -f "${WORKING_FOLDER}/${TIMER}" ]; then
+
+    mkdir -p "${WORKING_FOLDER}"
+    cp "${RESOURCES}/${TIMER}"* "${WORKING_FOLDER}/${TIMER}"
+
+fi
+
+if [ ! -f "${WORKING_FOLDER}/${SERVICE}" ]; then
+
+    mkdir -p "${WORKING_FOLDER}"
+    cp "${RESOURCES}/${SERVICE}"* "${WORKING_FOLDER}/${SERVICE}"
+
+fi
+
+if [ ! -f "${WORKING_FOLDER}/${WRAPPER}" ]; then
+
+    mkdir -p "${WORKING_FOLDER}"
+    cp "${RESOURCES}/${WRAPPER}"* "${WORKING_FOLDER}/${WRAPPER}"
+
+fi
+
+# *for steamos system compatability
+
+if [ $FLAG_os_is_steamos -eq 1 ]; then
+
+    sudo steamos-readonly disable
+
+fi
+
+# "Flash" the timer file (copy configured unit file to system)
+
+sudo cp "${WORKING_FOLDER}/${TIMER}" "${SYSTEM_UNITS}/"
+
+# "Flash" the service file (copy configured unit file to system)
+
+sudo cp "${WORKING_FOLDER}/${SERVICE}" "${SYSTEM_UNITS}/"
+
+# "Flash" executable file itself
+
+sudo cp "${WORKING_FOLDER}/${WRAPPER}" "${SYSTEM_BIN}/"
+
+if [ $FLAG_os_is_steamos -eq 1 ]; then
+
+    sudo steamos-readonly enable
+
+fi
+
+# Verify unit files
+systemd-analyze verify "${SYSTEM_UNITS}/${TIMER}"
+systemd-analyze verify "${SYSTEM_UNITS}/${SERVICE}"
+
+# Enable timer
+
+set +e
+sudo systemctl enable "$TIMER"
+sudo systemctl status "$TIMER"
+set -e
+
+echo
+echo "  ######################################################################"
+echo "  #                                                                    #"
+echo "  #     NOTE: Timer enabled at boot, but not started to give you a     #"
+echo "  #           chance to configure things (re-flash to update           #"
+echo "  #           system unit files).                                      #"
+echo "  #                                                                    #"
+echo "  ######################################################################"
+echo
