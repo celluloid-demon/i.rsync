@@ -1,68 +1,75 @@
 #!/bin/bash
 
+# Exit on error
+set -e
+
 LOCKFILE="/tmp/rsync-wrapper.lock"
 
-#############################
-#                           #
-#          EXAMPLE          #
-#                           #
-#############################
+run-rsync() {
 
-# dir="/home/jonathan/Desktop/@projects.rclone.bak"
+    # Try to acquire the lock
+    if mkdir "$LOCKFILE"; then
 
-# rclone sync google-drive-art: "${dir}/"
+        # Lock acquired, perform rsync backup
+        mkdir -p "$destination"
 
-##############################################
-#                                            #
-#          BEGIN USER CONFIGURATION          #
-#                                            #
-##############################################
+        rsync \
+                --append \
+                --archive \
+                --exclude "*.lnk" \
+                --exclude "desktop.ini" \
+                --exclude "Google*" \
+                --info=progress2 \
+                --partial \
+                "$1/" \
+                "$2/"
 
-DESKTOP_JON="/home/jonathan/Desktop"
+        # Release the lock
+        rmdir "$LOCKFILE"
 
-# @projects.rclone.bak
+    else
 
-dir="${DESKTOP_JON}/@projects.rclone.bak"
+        # Unable to acquire the lock, a previous instance is still running
+        message="Previous rsync job is still running (LOCKFILE path: ${LOCKFILE}), canceling."
+        echo "$message"
+        cat "$message" >> "${HOME}/Desktop/rsync-wrapper.log"
+        exit 1
 
-rclone sync google-drive-art: "${dir}/"
+    fi
 
-# @windows-files
+}
 
-source="${DESKTOP_JON}/Windows Desktop"
-destination="${DESKTOP_JON}/@windows-files"
+main() {
 
-# Try to acquire the lock
-if mkdir "$lockfile"; then
+    #############################
+    #                           #
+    #          EXAMPLE          #
+    #                           #
+    #############################
 
-    # Lock acquired, perform rsync backup
-    mkdir -p "$destination"
+    # source="/home/jonathan/Desktop/@files"
+    # destination="/mnt/external-drive/backups/@files"
 
-    rsync \
-            --append \
-            --archive \
-            --exclude "*.lnk" \
-            --exclude "desktop.ini" \
-            --exclude "Fedora_vmw" \
-            --exclude "Google*" \
-            --info=progress2 \
-            --partial \
-            "${source}/" \
-            "${destination}/"
+    # run-rsync "${source}/" "${destination}/"
 
-    # Release the lock
-    rmdir "$lockfile"
+    ##############################################
+    #                                            #
+    #          BEGIN USER CONFIGURATION          #
+    #                                            #
+    ##############################################
 
-else
+    # @files
 
-    # Unable to acquire the lock, a previous instance is still running
-    echo "Previous rsync job is still running, canceling."
-    exit 1
+    remote="sysadmin@raspberry-pi"
 
-fi
+    source="/mnt/d"
+    destination="${remote}:/filepacks/@files"
 
+    run-rsync "$source" "$destination"
 
+}
 
-
+main
 
 
 
