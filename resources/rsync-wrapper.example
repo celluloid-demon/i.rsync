@@ -11,14 +11,15 @@ run-rsync() {
     if mkdir "$LOCKFILE"; then
 
         # Lock acquired, perform rsync backup
-        mkdir -p "$destination"
+        # todo doesn't quite work with ssh remotes
+        # mkdir -p "$destination"
 
         rsync \
                 --append \
                 --archive \
                 --exclude "*.lnk" \
                 --exclude "desktop.ini" \
-                --exclude "Google*" \
+                --exclude "Google Drive" \
                 --info=progress2 \
                 --partial \
                 "$1/" \
@@ -58,9 +59,11 @@ main() {
     #                                            #
     ##############################################
 
-    # @files
+    # (setup)
 
     remote="sysadmin@raspberry-pi"
+
+    # @files
 
     source="/mnt/d"
     destination="${remote}:/filepacks/@files"
