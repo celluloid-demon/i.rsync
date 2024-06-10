@@ -40,7 +40,19 @@ run-rsync() {
 
 }
 
+cleanup() {
+
+    message="Something happened, canceling (try running rsync-wrapper manually to check status)..."
+
+    echo "$message"
+
+    cat "$message" >> "${HOME}/Desktop/rsync-wrapper.ERROR.log"
+
+}
+
 main() {
+
+    trap cleanup ERR
 
     #############################
     #                           #
@@ -61,14 +73,14 @@ main() {
 
     # (setup)
 
-    remote="sysadmin@raspberry-pi"
+    # remote="jonathan@raspberry-pi"
 
     # @files
 
-    source="/mnt/d"
-    destination="${remote}:/filepacks/@files"
+    # source="/mnt/d/Files"
+    # destination="${remote}:/filepacks/@files"
 
-    run-rsync "$source" "$destination"
+    # run-rsync "$source" "$destination"
 
 }
 

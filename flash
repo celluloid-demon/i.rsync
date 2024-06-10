@@ -62,17 +62,17 @@ fi
 
 # "Flash" the timer file (copy configured unit file to system)
 
-sudo rm "${SYSTEM_UNITS}/${TIMER}"
+# sudo rm "${SYSTEM_UNITS}/${TIMER}"
 sudo cp "${WORKING_FOLDER}/${TIMER}" "${SYSTEM_UNITS}/"
 
 # "Flash" the service file (copy configured unit file to system)
 
-sudo rm "${SYSTEM_UNITS}/${SERVICE}"
+# sudo rm "${SYSTEM_UNITS}/${SERVICE}"
 sudo cp "${WORKING_FOLDER}/${SERVICE}" "${SYSTEM_UNITS}/"
 
 # "Flash" executable file itself
 
-sudo rm "${SYSTEM_BIN}/${WRAPPER}"
+# sudo rm "${SYSTEM_BIN}/${WRAPPER}"
 sudo cp "${WORKING_FOLDER}/${WRAPPER}" "${SYSTEM_BIN}/"
 
 if [ $FLAG_os_is_steamos -eq 1 ]; then
