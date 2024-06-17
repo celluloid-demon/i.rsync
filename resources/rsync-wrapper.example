@@ -4,6 +4,7 @@
 set -e
 
 LOCKFILE="/tmp/rsync-wrapper.lock"
+REMOTE="jonathan@raspberry-pi"
 
 run-rsync() {
 
@@ -17,14 +18,16 @@ run-rsync() {
                 --exclude *".lnk" \
                 --exclude "desktop.ini" \
                 --exclude "Google Drive" \
+                --exclude "iCloud Drive" \
+                --exclude "Images" \
                 --exclude '$RECYCLE.BIN' \
                 --exclude ".snapshots" \
                 --exclude "System Volume Information" \
                 --exclude ".Trash"* \
                 --info=progress2 \
                 --partial \
-                "$1/" \
-                "$2/"
+                "$1" \
+                "$2"
 
         # Release the lock
         rmdir "$LOCKFILE"
@@ -32,9 +35,13 @@ run-rsync() {
     else
 
         # Unable to acquire the lock, a previous instance is still running
+
         message="Previous rsync job is still running (LOCKFILE path: ${LOCKFILE}), canceling."
+
         echo "$message"
+
         cat "$message" >> "${HOME}/Desktop/rsync-wrapper.ERROR.log"
+
         exit 1
 
     fi
@@ -63,10 +70,35 @@ main() {
     #                           #
     #############################
 
-    # source="/home/jonathan/Desktop/@files"
-    # destination="/mnt/external-drive/backups/@files"
+    # declare -a job=(
+        
+    #     FILES
+        
+    #     )
 
-    # run-rsync "${source}/" "${destination}/"
+    # declare -A source=(
+
+    #     [FILES]="/mnt/d/Files"
+
+    # )
+
+    # declare -A destination=(
+
+    #     [FILES]="${REMOTE}:/filepacks/@files"
+
+    # )
+
+    # for i in "${job[@]}"; do
+
+    #     # (NOTE: The reason you're not backing up windows files with robocopy is because you want checksums)
+
+    #     echo
+    #     echo "Source:      ${source[$i]}"
+    #     echo "Destination: ${destination[$i]}"
+
+    #     run-rsync "${source[$i]}/" "${destination[$i]}/"
+
+    # done
 
     ##############################################
     #                                            #
@@ -74,108 +106,6 @@ main() {
     #                                            #
     ##############################################
 
-    # (setup)
-
-    remote="jonathan@raspberry-pi"
-
-    # @applications
-
-    source="/home/jonathan/Applications"
-    destination="${remote}:/filepacks/@applications"
-
-    run-rsync "$source" "$destination"
-
-    # @files
-
-    source="/mnt/d/Files"
-    destination="${remote}:/filepacks/@files"
-
-    run-rsync "$source" "$destination"
-
-    # @music
-
-    source="/mnt/d/Music"
-    destination="${remote}:/filepacks/@music"
-
-    run-rsync "$source" "$destination"
-
-    # @shared-files
-
-    source="/mnt/c/Users/Jonathan/Desktop/Shared Files"
-    destination="${remote}:/filepacks/@shared-files"
-
-    run-rsync "$source" "$destination"
-
-    # @ssh
-
-    source="/home/jonathan/Desktop/@ssh"
-    destination="${remote}:/filepacks/@ssh"
-
-    run-rsync "$source" "$destination"
-
-    # @windows-files
-
-    # (NOTE: The reason you're not doing this with robocopy on the host is because you want checksums)
-
-    WINDOWS_FILES_SUBVOL="${remote}:/filepacks/@windows-files"
-    WIN_HOME="/mnt/c/Users/Jonathan"
-    WIN_DESKTOP="${WIN_HOME}/Desktop"
-
-        folder_name="Adobe Files"
-        echo "Backin up ${folder_name}..."
-        folder_source_path="${WIN_DESKTOP}/${folder_name}"
-        folder_destination_path="${WINDOWS_FILES_SUBVOL}/${folder_name}"
-        run-rsync "$folder_source_path" "$folder_destination_path"
-
-        folder_name="Google Projects"
-        echo "Backin up ${folder_name}..."
-        folder_source_path="${WIN_DESKTOP}/${folder_name}"
-        folder_destination_path="${WINDOWS_FILES_SUBVOL}/${folder_name}"
-        run-rsync "$folder_source_path" "$folder_destination_path"
-
-        folder_name="Images"
-        echo "Backin up ${folder_name}..."
-        folder_source_path="${WIN_DESKTOP}/${folder_name}"
-        folder_destination_path="${WINDOWS_FILES_SUBVOL}/${folder_name}"
-        run-rsync "$folder_source_path" "$folder_destination_path"
-
-        folder_name="Morrowind Files"
-        echo "Backin up ${folder_name}..."
-        folder_source_path="${WIN_DESKTOP}/${folder_name}"
-        folder_destination_path="${WINDOWS_FILES_SUBVOL}/${folder_name}"
-        run-rsync "$folder_source_path" "$folder_destination_path"
-
-        folder_name="Pokemon Files"
-        echo "Backin up ${folder_name}..."
-        folder_source_path="${WIN_DESKTOP}/${folder_name}"
-        folder_destination_path="${WINDOWS_FILES_SUBVOL}/${folder_name}"
-        run-rsync "$folder_source_path" "$folder_destination_path"
-
-        folder_name="SSH for Windows"
-        echo "Backin up ${folder_name}..."
-        folder_source_path="${WIN_DESKTOP}/${folder_name}"
-        folder_destination_path="${WINDOWS_FILES_SUBVOL}/${folder_name}"
-        run-rsync "$folder_source_path" "$folder_destination_path"
-
-        folder_name="WSL Files"
-        echo "Backin up ${folder_name}..."
-        folder_source_path="${WIN_DESKTOP}/${folder_name}"
-        folder_destination_path="${WINDOWS_FILES_SUBVOL}/${folder_name}"
-        run-rsync "$folder_source_path" "$folder_destination_path"
-
-        folder_name="ZBrush Files"
-        echo "Backin up ${folder_name}..."
-        folder_source_path="${WIN_DESKTOP}/${folder_name}"
-        folder_destination_path="${WINDOWS_FILES_SUBVOL}/${folder_name}"
-        run-rsync "$folder_source_path" "$folder_destination_path"
-
 }
 
 main
-
-
-
-
-
-
-
