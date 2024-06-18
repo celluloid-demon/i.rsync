@@ -39,19 +39,34 @@ LOG_ERROR="${LOG_FOLDER}/ERROR.log"
 
 declare -a job=(
     
+    APPLICATIONS
     FILES
+    MUSIC
+    SHARED_FILES
+    SSH
+    WINDOWS_FILES
     
     )
 
 declare -A source=(
 
+    [APPLICATIONS]="/home/jonathan/Applications"
     [FILES]="/mnt/d/Files"
+    [MUSIC]="/mnt/d/Music"
+    [SHARED_FILES]="/mnt/c/Users/Jonathan/Desktop/Shared Files"
+    [SSH]="/home/jonathan/Desktop/@ssh"
+    [WINDOWS_FILES]="/mnt/c/Users/Jonathan/Desktop"
 
 )
 
 declare -A destination=(
 
+    [APPLICATIONS]="${REMOTE}:/filepacks/@applications"
     [FILES]="${REMOTE}:/filepacks/@files"
+    [MUSIC]="${REMOTE}:/filepacks/@music"
+    [SHARED_FILES]="${REMOTE}:/filepacks/@shared-files"
+    [SSH]="${REMOTE}:/filepacks/@ssh"
+    [WINDOWS_FILES]="${REMOTE}:/filepacks/@windows-files"
 
 )
 
@@ -100,7 +115,7 @@ exit_non_zero() {
     
     write_log_error "$message"
 
-    [ -d "$LOCKFILE" ] rmdir "$LOCKFILE"
+    [ -d "$LOCKFILE" ] && rmdir "$LOCKFILE"
 
 }
 
