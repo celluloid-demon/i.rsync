@@ -83,7 +83,4 @@ $RECYCLE.BIN/
 #                          #
 ############################
 
-rsync.service
-rsync.timer
-
-rsync-wrapper
+working_folder/*
