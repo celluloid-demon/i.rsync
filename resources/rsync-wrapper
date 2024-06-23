@@ -31,6 +31,8 @@ REMOTE="jonathan@raspberry-pi"
 LOG="${LOG_FOLDER}/rsync-wrapper.log"
 LOG_ERROR="${LOG_FOLDER}/ERROR.log"
 
+RUN=0
+
 ##############################################
 #                                            #
 #          BEGIN USER CONFIGURATION          #
@@ -153,7 +155,7 @@ main() {
             echo "Source:      ${source[$i]}"
             echo "Destination: ${destination[$i]}"
 
-            run_rsync "${source[$i]}/" "${destination[$i]}/"
+            [ $RUN -eq 1 ] && run_rsync "${source[$i]}/" "${destination[$i]}/"
 
         done
 
