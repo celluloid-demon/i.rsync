@@ -157,7 +157,15 @@ main() {
             echo "Source:      ${source[$i]}"
             echo "Destination: ${destination[$i]}"
 
-            [ $SWITCH_run=0 -eq 1 ] && run_rsync "${source[$i]}/" "${destination[$i]}/"
+            if [ ! -d "${source[$i]}" ]; then
+
+                exit 1
+
+            elif [ $SWITCH_run -eq 1 ]; then
+            
+                run_rsync "${source[$i]}/" "${destination[$i]}/"
+
+            fi
 
         done
 
