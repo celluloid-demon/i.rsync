@@ -31,13 +31,15 @@ REMOTE="jonathan@raspberry-pi"
 LOG="${LOG_FOLDER}/rsync-wrapper.log"
 LOG_ERROR="${LOG_FOLDER}/ERROR.log"
 
-RUN=0
+SWITCH_run=0
 
 ##############################################
 #                                            #
 #          BEGIN USER CONFIGURATION          #
 #                                            #
 ##############################################
+
+SWITCH_run=0
 
 declare -a job=(
     
@@ -155,7 +157,7 @@ main() {
             echo "Source:      ${source[$i]}"
             echo "Destination: ${destination[$i]}"
 
-            [ $RUN -eq 1 ] && run_rsync "${source[$i]}/" "${destination[$i]}/"
+            [ $SWITCH_run=0 -eq 1 ] && run_rsync "${source[$i]}/" "${destination[$i]}/"
 
         done
 
