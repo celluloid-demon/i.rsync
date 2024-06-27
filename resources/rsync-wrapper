@@ -58,7 +58,7 @@ declare -A source=(
     [FILES]="/mnt/d/Files"
     [MUSIC]="/mnt/d/Music"
     [SHARED_FILES]="/mnt/c/Users/Jonathan/Desktop/Shared Files"
-    [SSH]="/home/jonathan/Desktop/@ssh"
+    [SSH]="/home/jonathan/.filepacks/@ssh"
     [WINDOWS_FILES]="/mnt/c/Users/Jonathan/Desktop/Windows Files"
 
 )
